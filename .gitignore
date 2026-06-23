@@ -1,0 +1,21 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+local.settings.json
+
+# Secrets — må ALDRIG committes
+appsettings.Development.json
+*.pfx
+*.key
+secrets/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
