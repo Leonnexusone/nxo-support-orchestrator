@@ -7,16 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added - Sprint 1 (Email Trigger) - 2026-06-25
+## [0.2.0] - 2026-06-26
+
+### Added - Sprint 1 (Email Trigger) ✅ COMPLETED
 - Azure Functions project reinitialized with .NET 10 isolated worker runtime
 - EmailTrigger function created using TimerTrigger template
-- Timer configured to run every 5 minutes (cron: `0 */5 * * * *`)
+- Timer configured to run every 2 minutes for testing (cron: `0 */2 * * * *`)
 - Microsoft Graph API integration:
   - Installed `Microsoft.Graph` (v6.2.0) NuGet package
   - Installed `Azure.Identity` (v1.21.0) NuGet package
   - Implemented `GraphServiceClient` with `ClientSecretCredential` authentication
   - Email fetching logic with filters (only unread emails, top 10)
   - Selected fields optimization (subject, from, body, receivedDateTime)
+  - **Successfully tested with Microsoft 365 mailbox (support@personale309.onmicrosoft.com)**
 - Configuration management:
   - Environment variables for Azure credentials (Tenant ID, Client ID, Client Secret)
   - Mailbox configuration via `GRAPH_MAILBOX` setting
@@ -31,15 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed - Sprint 1
 - Upgraded from .NET 9 to .NET 10 (matching installed SDK)
 - Commented out Azure Monitor exporter in Program.cs for local development
+- Timer interval changed from 5 minutes to 2 minutes for faster testing
 
 ### Fixed - Sprint 1
 - Resolved .NET SDK version mismatch (switched from net9.0 to net10.0)
 - Fixed Azure Storage connection string requirement by installing Azurite
 - Resolved file locking issues during build by using `dotnet clean`
-
-### Known Issues - Sprint 1
-- Graph API returns 401 Unauthorized - Azure App Registration permissions need to be configured
-- Gmail integration not yet tested - Microsoft 365 email recommended for Graph API
+- Fixed Azure App Registration authentication by using correct Client Secret Value (not Secret ID)
+- Successfully configured API permissions (Mail.Read) and admin consent in Azure Portal
 
 ## [0.1.0] - 2026-06-24
 
@@ -72,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | Sprint | Focus | Status |
 |---|---|---|
 | Sprint 0 | Foundation | ✅ Done |
-| Sprint 1 | Email trigger | 🟡 In Progress |
+| Sprint 1 | Email trigger | ✅ Done |
 | Sprint 2 | AI classification | ⬜ Planned |
 | Sprint 3 | Case creation | ⬜ Planned |
 | Sprint 4 | Human review | ⬜ Planned |

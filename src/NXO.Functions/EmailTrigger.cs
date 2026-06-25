@@ -30,9 +30,9 @@ public class EmailTrigger
         _graphClient = new GraphServiceClient(credential);
     }
 
-    // Denne funktion kører automatisk hvert 5. minut
+    // Denne funktion kører automatisk hvert 2. minut (til test - skift til */5 i produktion)
     [Function("EmailTrigger")]
-    public async Task Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("0 */2 * * * *")] TimerInfo myTimer)
     {
         _logger.LogInformation("EmailTrigger kørt: {executionTime}", DateTime.Now);
 
