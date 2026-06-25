@@ -10,8 +10,9 @@ var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
 
-builder.Services.AddOpenTelemetry()
-    .UseFunctionsWorkerDefaults()
-    .UseAzureMonitorExporter();
+// TODO: Tilføj Azure Monitor connection string for produktion
+// builder.Services.AddOpenTelemetry()
+//     .UseFunctionsWorkerDefaults()
+//     .UseAzureMonitor Exporter();
 
 builder.Build().Run();
