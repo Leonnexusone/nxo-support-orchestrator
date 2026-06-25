@@ -7,12 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added - Sprint 1 (Email Trigger)
-- Azure Functions project initialized with .NET 9 isolated worker runtime
+### Added - Sprint 1 (Email Trigger) - 2026-06-25
+- Azure Functions project reinitialized with .NET 10 isolated worker runtime
 - EmailTrigger function created using TimerTrigger template
 - Timer configured to run every 5 minutes (cron: `0 */5 * * * *`)
-- Basic logging infrastructure with ILogger
-- TODO comments for future sprints (Graph API, AI classification, Dynamics 365)
+- Microsoft Graph API integration:
+  - Installed `Microsoft.Graph` (v6.2.0) NuGet package
+  - Installed `Azure.Identity` (v1.21.0) NuGet package
+  - Implemented `GraphServiceClient` with `ClientSecretCredential` authentication
+  - Email fetching logic with filters (only unread emails, top 10)
+  - Selected fields optimization (subject, from, body, receivedDateTime)
+- Configuration management:
+  - Environment variables for Azure credentials (Tenant ID, Client ID, Client Secret)
+  - Mailbox configuration via `GRAPH_MAILBOX` setting
+- Local development setup:
+  - Azurite installed globally via npm for local Azure Storage emulation
+  - Azure Monitor OpenTelemetry disabled for local development
+- Error handling and logging:
+  - Try-catch blocks for Graph API calls
+  - Structured logging with ILogger
+  - Detailed error messages for troubleshooting
+
+### Changed - Sprint 1
+- Upgraded from .NET 9 to .NET 10 (matching installed SDK)
+- Commented out Azure Monitor exporter in Program.cs for local development
+
+### Fixed - Sprint 1
+- Resolved .NET SDK version mismatch (switched from net9.0 to net10.0)
+- Fixed Azure Storage connection string requirement by installing Azurite
+- Resolved file locking issues during build by using `dotnet clean`
+
+### Known Issues - Sprint 1
+- Graph API returns 401 Unauthorized - Azure App Registration permissions need to be configured
+- Gmail integration not yet tested - Microsoft 365 email recommended for Graph API
 
 ## [0.1.0] - 2026-06-24
 
