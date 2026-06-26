@@ -13,6 +13,7 @@ builder.ConfigureFunctionsWebApplication();
 
 // Registrer services
 builder.Services.AddSingleton<EmailClassifier>();
+builder.Services.AddSingleton<CaseCreator>();
 
 // TODO: Tilføj Azure Monitor connection string for produktion
 // builder.Services.AddOpenTelemetry()

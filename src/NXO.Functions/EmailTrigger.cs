@@ -18,9 +18,15 @@ public class EmailTrigger
     // EmailClassifier bruges til AI-baseret email klassificering
     private readonly EmailClassifier _classifier;
 
-    public EmailTrigger(ILoggerFactory loggerFactory, EmailClassifier classifier)
+    // CaseCreator bruges til at oprette cases i Dynamics 365
+    private readonly CaseCreator _caseCreator;
+
+    public EmailTrigger(ILoggerFactory loggerFactory, EmailClassifier classifier, CaseCreator caseCreator)
     {
-        _logger = loggerFactory.CreateLogger<EmailTrigger>();        _classifier = classifier;
+        _logger = loggerFactory.CreateLogger<EmailTrigger>();
+        _classifier = classifier;
+        _caseCreator = caseCreator;
+
         // Hent credentials fra environment variables (kommer fra Key Vault senere)
         var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
         var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
@@ -85,7 +91,24 @@ public class EmailTrigger
 
                 _logger.LogInformation("AI Sammenfatning: {summary}", classification.Summary);
 
-                // TODO Sprint 3: Opret case i Dynamics 365 baseret på klassificering
+                // Sprint 3: Opret case i Dynamics 365
+                var caseId = await _caseCreator.CreateCaseAsync(
+                    subject: message.Subject ?? "(intet emne)",
+                    description: message.Body?.Content ?? "",
+                    senderEmail: message.From?.EmailAddress?.Address ?? "unknown@email.com",
+                    classification: classification
+                );
+
+                if (caseId != Guid.Empty)
+                {
+                    _logger.LogInformation("✅ Case oprettet: {CaseId} — {Url}",
+                        caseId,
+                        $"{Environment.GetEnvironmentVariable("D365_URL")}/main.aspx?pagetype=entityrecord&etn=incident&id={caseId}");
+                }
+                else
+                {
+                    _logger.LogWarning("⚠️ Case kunne ikke oprettes for email: {Subject}", message.Subject);
+                }
             }
         }
         catch (Exception ex)
