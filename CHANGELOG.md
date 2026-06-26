@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-26
+
+### Added - Sprint 2 (AI Classification) ✅ COMPLETED
+- Azure OpenAI integration:
+  - Installed `Azure.AI.OpenAI` NuGet package (latest)
+  - Created `EmailClassifier` service in `/Services` folder
+  - Configured with Azure OpenAI endpoint, API key, and model (gpt-4.1-mini)
+  - Implemented `ClassifyEmailAsync` method for AI-powered email classification
+- AI prompt engineering:
+  - Comprehensive system prompt for email classification
+  - Category detection: TechnicalSupport, D365CRM, BusinessCentral, Billing, Onboarding, Complaint, General
+  - Priority assessment: Critical, High, Medium, Low
+  - Sentiment analysis: Positive, Neutral, Negative, Frustrated
+  - Complexity evaluation: Simple, Medium, Complex, Expert
+  - Confidence score (0.0 - 1.0)
+  - AI-generated summary in Danish/English
+- Structured classification results:
+  - Created `ClassificationResult` DTO with 6 properties
+  - JSON deserialization with case-insensitive property matching
+  - Fallback mechanism for AI failures (default: General/Medium)
+- EmailTrigger integration:
+  - Registered `EmailClassifier` in dependency injection (Program.cs)
+  - Integrated classification into email processing workflow
+  - Enhanced logging with classification details (category, priority, sentiment, complexity)
+  - AI summary logging for each processed email
+- Configuration management:
+  - Added `AI_ENDPOINT` setting (Azure OpenAI endpoint URL)
+  - Added `AI_API_KEY` setting (Azure OpenAI API key)
+  - Added `AI_MODEL` setting (model name: gpt-4.1-mini)
+- Development utilities:
+  - Created `START-SYSTEM.md` with quick-start commands
+  - Documented start/stop procedures for local testing
+
+### Changed - Sprint 2
+- Updated EmailTrigger constructor to inject EmailClassifier service
+- Enhanced email processing loop with AI classification calls
+- Improved logging output with classification results and summaries
+
+### Fixed - Sprint 2
+- Resolved raw string literal syntax error (changed `$"""` to `$$"""` for JSON in prompt)
+- Fixed ChatMessage namespace issues (added `using OpenAI.Chat`)
+- Corrected Azure OpenAI endpoint URL format (.openai.azure.com)
+- Successfully tested with 3 sample emails showing accurate classification
+
 ## [0.2.0] - 2026-06-26
 
 ### Added - Sprint 1 (Email Trigger) ✅ COMPLETED
@@ -75,7 +119,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |---|---|---|
 | Sprint 0 | Foundation | ✅ Done |
 | Sprint 1 | Email trigger | ✅ Done |
-| Sprint 2 | AI classification | ⬜ Planned |
+| Sprint 2 | AI classification | ✅ Done |
 | Sprint 3 | Case creation | ⬜ Planned |
 | Sprint 4 | Human review | ⬜ Planned |
 | Sprint 5 | Demo | ⬜ Planned |

@@ -3,6 +3,7 @@ using Azure.Identity;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
+using NXO.Functions.Services;
 
 namespace NXO.Functions;
 
@@ -14,10 +15,12 @@ public class EmailTrigger
     // GraphServiceClient er vores forbindelse til Microsoft Graph API
     private readonly GraphServiceClient _graphClient;
 
-    public EmailTrigger(ILoggerFactory loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<EmailTrigger>();
+    // EmailClassifier bruges til AI-baseret email klassificering
+    private readonly EmailClassifier _classifier;
 
+    public EmailTrigger(ILoggerFactory loggerFactory, EmailClassifier classifier)
+    {
+        _logger = loggerFactory.CreateLogger<EmailTrigger>();        _classifier = classifier;
         // Hent credentials fra environment variables (kommer fra Key Vault senere)
         var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
         var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
@@ -60,7 +63,7 @@ public class EmailTrigger
                 return;
             }
 
-            // Log hver email vi finder
+            // Log og klassificer hver email vi finder
             foreach (var message in messages.Value)
             {
                 _logger.LogInformation("Email fundet: Fra={from}, Emne={subject}, Modtaget={received}",
@@ -68,7 +71,21 @@ public class EmailTrigger
                     message.Subject,
                     message.ReceivedDateTime);
 
-                // TODO Sprint 2: Send email til AI klassificering
+                // Sprint 2: AI klassificering
+                var classification = await _classifier.ClassifyEmailAsync(
+                    message.Subject ?? "(intet emne)",
+                    message.Body?.Content ?? ""
+                );
+
+                _logger.LogInformation("AI Klassificering: Kategori={category}, Prioritet={priority}, Sentiment={sentiment}, Kompleksitet={complexity}",
+                    classification.Category,
+                    classification.Priority,
+                    classification.Sentiment,
+                    classification.Complexity);
+
+                _logger.LogInformation("AI Sammenfatning: {summary}", classification.Summary);
+
+                // TODO Sprint 3: Opret case i Dynamics 365 baseret på klassificering
             }
         }
         catch (Exception ex)
