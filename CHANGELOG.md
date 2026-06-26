@@ -7,6 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-26
+
+### Added - Sprint 3 (Case Management) 🟡 PARTIAL
+- Microsoft Dynamics 365 integration:
+  - Installed `Microsoft.PowerPlatform.Dataverse.Client` (v1.2.10) NuGet package
+  - Installed `Microsoft.CrmSdk.XrmTooling.CoreAssembly` (v10.0.2) NuGet package
+  - Created `CaseCreator` service in `/Services` folder
+  - Configured with D365 URL, Client ID, Client Secret, and Tenant ID
+  - Implemented `CreateCaseAsync` method for creating support cases
+- D365 case creation logic:
+  - Entity type: `incident` (standard D365 case entity)
+  - Standard fields: title, description, caseorigincode (Email = 2)
+  - AI classification field mapping to custom D365 fields:
+    - `new_aikategori` - AI detected category
+    - `new_aiprioritet` - AI detected priority
+    - `new_aisentiment` - AI detected sentiment
+    - `new_aikompleksitet` - AI detected complexity
+    - `new_aiconfidence` - AI confidence score (0.0 - 1.0)
+    - `new_aisammenfatning` - AI generated summary
+    - `new_afsenderemail` - Sender email address
+    - `new_kanal` - Channel (always "Email")
+  - Priority mapping logic:
+    - Critical/High → OptionSetValue(1) - High priority
+    - Medium → OptionSetValue(2) - Normal priority
+    - Low → OptionSetValue(3) - Low priority
+- ServiceClient integration:
+  - Connection string builder with ClientSecret authentication
+  - `IsReady` check before case creation
+  - Thread-safe case creation with `await Task.FromResult()`
+  - Returns case GUID on success, Guid.Empty on failure
+- EmailTrigger orchestration:
+  - Integrated CaseCreator via dependency injection
+  - Named parameters for clarity in CreateCaseAsync call
+  - D365 case URL logging for direct access: `{D365_URL}/main.aspx?pagetype=entityrecord&etn=incident&id={caseId}`
+  - Enhanced logging with case ID and clickable URL
+- Configuration management:
+  - Added `D365_URL` setting (Dynamics 365 environment URL)
+  - Reusing existing `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID` for D365 authentication
+
+### Changed - Sprint 3
+- Updated EmailTrigger constructor to inject CaseCreator service
+- Enhanced email processing workflow: Email → AI Classification → D365 Case Creation
+- Updated Program.cs to register CaseCreator in dependency injection
+- Improved logging with case creation status and D365 links
+
+### Known Issues - Sprint 3 ⚠️
+- **BLOCKER: App Registration tenant mismatch**
+  - App Registration `2069fafe-dfb7-4429-82bb-5472010752b0` not found in "NexusOne ApS" tenant
+  - Error: `AADSTS700016: Application with identifier was not found in the directory`
+  - ServiceClient connection fails during authentication
+  - **Required Fix:** Create new App Registration in correct tenant OR configure multi-tenant access OR use separate credentials for D365
+  - Code is complete and builds successfully, but runtime connection fails
+- **Pending:** Custom fields (`new_ai*`) must be created in D365 environment before system can populate them
+
+### Not Yet Implemented - Sprint 3
+- CustomerResolver service (domain-to-customer mapping)
+- DuplicateChecker service (prevent duplicate cases)
+- AuditLogger service (Azure Table Storage logging)
+- Custom field creation in Dynamics 365
+
 ## [0.3.0] - 2026-06-26
 
 ### Added - Sprint 2 (AI Classification) ✅ COMPLETED
