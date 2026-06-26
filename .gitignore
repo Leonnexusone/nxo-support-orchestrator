@@ -12,6 +12,9 @@ appsettings.Development.json
 *.key
 secrets/
 
+# Azure Storage Emulator
+.azurite/
+
 # IDE
 .vscode/
 .idea/
